@@ -4,48 +4,71 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Title, Card, Button } from 'react-native-paper'
 import { MaterialIcons, Entypo } from '@expo/vector-icons'
 
-const Profile = () => {
+
+const Profile = (props) => {
+    const { _id, name, phone, salary, picture, position, email } = props.route.params.item
+    const uurl = "https://1c10c4e2.ngrok.io/"
+
+    const deleteEmployee = () => {
+        fetch(uurl + "delete", {
+            method: "post",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                id:_id
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            Alert.alert(`${data.name} is deleted successfully`)
+            props.navigation.navigate("Home")
+        }).catch(err => {
+            Alert.alert("something went wrong")
+        })
+    }
+
     const openDial = () => {
         if (Platform.OS === "android") {
-            Linking.openURL(`tel:${"8650330029"}`)
+            Linking.openURL(`tel:${phone}`)
         } else {
-            Linking.openURL(`telprompt:${"8650330029"}`)
+            Linking.openURL(`telprompt:${phone}`)
         }
     }
     return (
         <View style={styles.root}>
             <LinearGradient
-                colors={["#0033ff", "#6bc1ff"]}
+                colors={["#0033ff","#6bc1ff"]}
                 style={{ height: "20%" }}
             />
             <View style={{alignItems:"center"}}>
             <Image
-                style={{ width: 140, height: 140, borderRadius: 140 / 2, marginTop: -50 }}
-                source={{ uri: "https://images.unsplash.com/photo-1585573139865-fcc0aff09b88?ixlib=rb-1.2.1&ixid=eyjhchbfawqiojeymdd9&auto=format&fit=crop&w=500&q=60" }}
-                />
+                    style= {{ width: 140, height: 140, borderRadius: 140 / 2, marginTop: -50 }}
+                    source={{uri: picture}}
+             />
             </View>
             <View style={{ alignItems: "center", margin: 15 }}>
-                <Title>asdf</Title>
-                <Text style={{ fontSize: 15 }}>developer</Text>
+                <Title>{name}</Title>
+                <Text style={{ fontSize: 15 }}>{position}</Text>
             </View>
             <Card style={styles.mycard} onPress={() => {
-                Linking.openURL(`mailto:${"mnavneetbajaj@gmail.com"}`)
+                Linking.openURL(`mailto:${email}`)
             }}>
                 <View style={styles.cardContent}>
                     <MaterialIcons name="email" size={32} color="#006aff" />
-                    <Text style={styles.mytext}>mnavneetbajaj@gmail.com</Text>
+                    <Text style={styles.mytext}>{email}</Text>
                 </View>
             </Card>
             <Card style={styles.mycard} onPress={() => openDial()}>
                 <View style={styles.cardContent}>
                     <Entypo name="phone" size={32} color="#006aff" />
-                    <Text style={styles.mytext}>8650330029</Text>
+                    <Text style={styles.mytext}>{phone}</Text>
                 </View>
             </Card>
             <Card style={styles.mycard}>
                 <View style={styles.cardContent}>
                     <MaterialIcons name="attach-money" size={32} color="#006aff" />
-                    <Text style={styles.mytext}>12345</Text>
+                    <Text style={styles.mytext}>{salary}</Text>
                 </View>
             </Card>
             <View style={{ flexDirection: "row", justifyContent: "space-around", padding: 10 }}>
@@ -64,7 +87,7 @@ const Profile = () => {
                     icon="delete"
                     mode="contained"
                     theme={theme}
-                    onPress={() => deleteEmploye()}>
+                    onPress={() => deleteEmployee()}>
                     Fire employee
                 </Button>
             </View>
